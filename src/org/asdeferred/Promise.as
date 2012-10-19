@@ -23,14 +23,13 @@
 // POSSIBILITY OF SUCH DAMAGE.
 package org.asdeferred
 {
-    import flash.events.IEventDispatcher;
 
     /**
      * See jQuery Promise; CommonJS Promises/A.
      *
      * A Promise represents the eventual value returned from the single completion of an operation.
      */
-    public interface Promise extends IEventDispatcher
+    public interface Promise
     {
 
         //------------------------------
@@ -58,44 +57,44 @@ package org.asdeferred
 
         /**
          * Adds a listener for when the promise has been fulfilled.
-         * @param eventHandler The event handler that will be invoked. Provided event handler should accept a single
-         *                     argument, an AsyncOperationEvent.
-         * @return Self
+         * @param Function A function that will be invoked with the same arguments that resolve() was passed.
+         * @return Promise Self
          */
-        function done(eventHandler : Function) : Promise;
+        function done(callback : Function) : Promise;
 
         //------------------------------
 
         /**
          * Adds a listener for when the promise has failed to be fulfilled.
-         * @param eventHandler The event handler that will be invoked. Provided event handler should accept a single
-         *                     argument, an AsyncOperationEvent.
-         * @return Self
+         * @param Function A function that will be invoked with the same arguments that reject() was passed.
+         * @return Promise Self
          */
-        function fail(eventHandler : Function) : Promise;
+        function fail(callback : Function) : Promise;
 
         //------------------------------
 
         /**
          * Adds a listener for when the promise makes progress.
-         * @param eventHandler The event handler that will be invoked. Provided event handler should accept a single
-         *                     argument, an AsyncOperationEvent.
-         * @return Self
+         *
+         * @param Function A function that will be invoked with the same arguments that notify() was passed.
+         *
+         * @return Promise Self
          */
-        function progress(eventHandler : Function) : Promise;
+        function progress(callback : Function) : Promise;
 
         //------------------------------
 
         /**
-         * Adds a handler that is executed when the promise is fulfilled or fails, regardless of its outcome.
+         * Registers a callback function to be executed when the promise is resolved or rejected, regardless of its
+         * outcome.
          *
-         * N.B. Our implementation of then() diverges from jQuery's.
+         * N.B. This implementation of then() diverges from jQuery's.
          *
-         * @param eventHandler The event handler that will be invoked. Provided event handler should accept a single
-         *                     argument, an AsyncOperationEvent.
-         * @return Self
+         * @param Function A function that will be invoked with the same arguments that resolve() or reject() was
+         *                 passed.
+         * @return Promise Self
          */
-        function then(eventHandler : Function) : Promise;
+        function then(callback : Function) : Promise;
 
         //------------------------------
 
@@ -124,11 +123,8 @@ package org.asdeferred
          *                      var deferred : Deferred = new Deferred();
          *
          *                      order.patient.loadReferral()
-         *                          .done(function(event : PromiseEvent) : void
-         *                                {
-         *                                    event.callWithArgs(deferred.resolve);
-         *                                })
-         *                          .fail(function(event : PromiseEvent) : void
+         *                          .done(deferred.resolve)
+         *                          .fail(function() : void
          *                                {
          *                                    logger.error("Failed to load the patient! Oh no!");
          *                                    // If we can recover...
@@ -152,6 +148,8 @@ package org.asdeferred
          * chain() returns a Promise itself, indicating the success or failure of the chain as a whole. In this way
          * chains may be composed of other chains. Logical branching can be achieved by adding error handlers in the
          * operations themselves, as in the second operation in the example.
+         *
+         * @return Promise
          */
         function chain(... operations) : Promise;
 
